@@ -3,23 +3,24 @@
     "project_name": "aphrodite"
   },
   "dataloader": {
-    "dataset_dir": "",
-    "dataset_path": "",
+    "train_dataset": "../dataset/att_faces/train/dataset.txt",
+    "val_dataset": "../dataset/att_faces/valid/dataset.txt"
   },
   "model": {
-    "skip_step": 20,
-    "learning_rate": 0.001,
+    "learning_rate": 0.0005,
     "momentum": 0.9,
-    "batch_size": 16,
-    "num_classes": 4
+    
+    "num_classes": 2
   },
   "trainer": {
+    "skip_step": 20,
+    "batch_size": 12,
     "num_epochs": 20,
     "num_iter_per_epoch": 10,
     "num_iter_per_eval": 3
   },
   "image": {
-    "shape": 128,
+    "size": 128,
     "channel": 3
   },
   "saved_model": {
