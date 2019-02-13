@@ -1,15 +1,15 @@
 import tensorflow as tf
 
 
-def feed_forward(x, num_hiddens, activation=None, 
-                 scope_name, reuse=False):
+def feed_forward(x, num_hiddens, scope_name, 
+                 activation=None, reuse=False):
     with tf.variable_scope(scope_name, reuse=reuse):
         ff = tf.layers.dense(
             x, num_hiddens, activation=activation, reuse=reuse)
     return ff
 
 
-def linear(x, num_hiddens=None, scope_name, reuse=False):
+def linear(x, scope_name, num_hiddens=None, reuse=False):
     if num_hiddens is None:
         num_hiddens = x.get_shape().as_list()[-1]
     with tf.variable_scope(scope_name, reuse=reuse):
@@ -28,33 +28,37 @@ def residual(x_in, x_out, reuse=False):
     return res_con
 
 
-def normalization(x, eps, is_training):
-    beta = tf.Variable(
-        tf.constant(0.0, shape=[filters]),
-        name='beta',
-        trainable=False)
-    gamma = tf.Variable(
-        tf.constant(1.0, shape=[filters]),
-        name='gamma',
-        trainable=False)
+def batch_normalization(x, num_filters, eps, trainable, scope_name):
 
-    batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2])
+    with tf.name_scope(scope_name) as scope:
 
-    ema = tf.train.ExponentialMovingAverage(decay=0.1)
+        beta = tf.Variable(
+            tf.constant(0.0, shape=[num_filters]),
+            name='beta',
+            trainable=False)
 
-    def mean_var_with_update():
-        ema_apply_op = ema.apply([batch_mean, batch_var])
+        gamma = tf.Variable(
+            tf.constant(1.0, shape=[num_filters]),
+            name='gamma',
+            trainable=False)
 
-        with tf.control_dependencies([ema_apply_op]):
-            return tf.identity(batch_mean), tf.identity(batch_var)
+        batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2])
 
-    mean, var = tf.cond(
-        is_training,
-        mean_var_with_update,
-        lambda: (ema.average(batch_mean), ema.average(batch_var)))
+        ema = tf.train.ExponentialMovingAverage(decay=0.1)
 
-    bn_conv = tf.nn.batch_normalization(
-        conv, mean, var, beta, gamma, eps)
+        def mean_var_with_update():
+            ema_apply_op = ema.apply([batch_mean, batch_var])
+
+            with tf.control_dependencies([ema_apply_op]):
+                return tf.identity(batch_mean), tf.identity(batch_var)
+
+        mean, var = tf.cond(
+            trainable,
+            mean_var_with_update,
+            lambda: (ema.average(batch_mean), ema.average(batch_var)))
+
+        bn_conv = tf.nn.batch_normalization(
+            x, mean, var, beta, gamma, eps)
 
     return bn_conv
 
