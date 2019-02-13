@@ -19,7 +19,7 @@ class BaseTrain:
 
     def train(self):
         cur_epoch_tensor = self.model.cur_epoch_tensor.eval(self.sess)
-        num_epochs = self.config.num_epochs
+        num_epochs = self.config.trainer.num_epochs
         for cur_epoch in range(cur_epoch_tensor, num_epochs + 1, 1):
             self.train_epoch(cur_epoch)
             self.sess.run(self.model.increment_cur_epoch_tensor)
