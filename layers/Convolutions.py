@@ -1,9 +1,9 @@
 import tensorflow as tf
 
 
-def conv_layer(self, inputs, filters, k_size,
+def conv_layer(inputs, filters, k_size,
                stride, padding, scope_name, 
-               reuse=False, active=True):
+               reuse=False, active=False):
 
     with tf.variable_scope(scope_name, reuse=reuse) as scope:
         in_channels = inputs.shape[-1]
@@ -30,7 +30,7 @@ def conv_layer(self, inputs, filters, k_size,
     return f_conv
 
 
-def maxpool(self, inputs, k_size,
+def maxpool(inputs, k_size,
             stride, padding='VALID', scope_name='maxpool'):
 
     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE) as scope:
@@ -40,8 +40,8 @@ def maxpool(self, inputs, k_size,
     return pool
 
 
-def fully_connected(self, inputs, out_dim,
-                    scope_name, activation=tf.nn.relu):
+def fully_connected(inputs, out_dim,
+                    scope_name, activation=tf.nn.sigmoid):
 
     with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE) as scope:
         in_dim = inputs.shape[-1]
