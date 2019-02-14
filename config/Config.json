@@ -9,19 +9,18 @@
   "model": {
     "learning_rate": 0.0005,
     "momentum": 0.9,
-    
     "num_classes": 2
   },
   "trainer": {
     "skip_step": 20,
     "batch_size": 12,
-    "num_epochs": 20,
+    "num_epochs": 10,
     "num_iter_per_epoch": 10,
     "num_iter_per_eval": 3
   },
   "image": {
-    "size": 128,
-    "channel": 3
+    "size": 100,
+    "channel": 1
   },
   "saved_model": {
     "max_to_keep": 5

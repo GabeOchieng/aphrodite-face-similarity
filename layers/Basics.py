@@ -28,20 +28,27 @@ def residual(x_in, x_out, reuse=False):
     return res_con
 
 
+def optimize(loss, learning_rate=0.001):
+    return tf.train.GradientDescentOptimizer(
+        learning_rate=learning_rate).minimize(loss)
+
+
 def batch_normalization(x, num_filters, eps, trainable, scope_name):
 
-    with tf.name_scope(scope_name) as scope:
+    with tf.variable_scope(scope_name, reuse=tf.AUTO_REUSE) as scope:
 
         beta = tf.Variable(
             tf.constant(0.0, shape=[num_filters]),
             name='beta',
-            trainable=False)
+            trainable=True)
 
         gamma = tf.Variable(
             tf.constant(1.0, shape=[num_filters]),
             name='gamma',
-            trainable=False)
+            trainable=True)
 
+    with tf.name_scope(scope_name) as scope:
+        
         batch_mean, batch_var = tf.nn.moments(x, [0, 1, 2])
 
         ema = tf.train.ExponentialMovingAverage(decay=0.1)
@@ -61,8 +68,3 @@ def batch_normalization(x, num_filters, eps, trainable, scope_name):
             x, mean, var, beta, gamma, eps)
 
     return bn_conv
-
-
-def optimize(loss, learning_rate=0.001):
-    return tf.train.GradientDescentOptimizer(
-        learning_rate=learning_rate).minimize(loss)
