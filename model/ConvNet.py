@@ -8,7 +8,7 @@ from layers.Convolutions import maxpool
 from layers.Losses import contrastive_loss, DBL_loss
 from layers.Losses import euclidean_distance
 
-# TODO
+
 class ConvNet(BaseModel):
     def __init__(self, data_loader, config):
         super(ConvNet, self).__init__(config)
