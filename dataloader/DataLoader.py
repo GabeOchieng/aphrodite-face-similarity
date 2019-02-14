@@ -2,6 +2,7 @@ import os
 import cv2
 import random
 import numpy as np
+import matplotlib.pyplot as plt
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
 
@@ -16,7 +17,8 @@ class DataLoader:
         self.unique_train_label = None
         self.map_train_label_indices = dict()
 
-    def read_images(self, filenames, im_size):
+    def read_images(self, filenames, im_size, 
+                    should_invert=True):
         images = []
         labels = []
 
@@ -27,11 +29,17 @@ class DataLoader:
                 print(filenames[i])
                 pass
 
-            if img.shape != (im_size, im_size):
-                img = cv2.resize(
-                    img, (im_size, im_size))
+            grayscale = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-            images.append(img)
+            if should_invert:
+                grayscale = cv2.bitwise_not(grayscale)
+
+            if grayscale.shape != (im_size, im_size):
+                grayscale = cv2.resize(grayscale, (im_size, im_size))
+
+            grayscale = np.expand_dims(grayscale, axis=3)
+
+            images.append(grayscale)
 
         return np.array(images)
 
