@@ -4,7 +4,7 @@ import numpy as np
 from tqdm import tqdm
 from dataloader.DataLoader import DataLoader
 
-# TODO
+
 class SiameseDataLoader(DataLoader):
     def __init__(self, config):
         super(SiameseDataLoader, self).__init__(config)
