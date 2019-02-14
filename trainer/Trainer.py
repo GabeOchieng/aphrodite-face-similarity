@@ -1,7 +1,7 @@
 import numpy as np
 from base.BaseTrain import BaseTrain
 
-# TODO
+
 class Trainer(BaseTrain):
     def __init__(self, sess, model, 
                  config, logger, data_loader):
