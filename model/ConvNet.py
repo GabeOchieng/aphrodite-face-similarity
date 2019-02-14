@@ -35,14 +35,11 @@ class ConvNet(BaseModel):
                 x, paddings=paddings, 
                 mode='REFLECT', name='pads1')
             conv1 = conv_layer(
-                pads1, filters=32, k_size=7,
+                pads1, filters=4, k_size=3,
                 stride=1, padding='SAME',
                 scope_name='conv1', reuse=reuse)
-            pool1 = maxpool(
-                conv1, k_size=2, stride=2,
-                padding='SAME', scope_name='pool1')
             norm1 = batch_normalization(
-                pool1, num_filters=32, eps=1e-05, 
+                conv1, num_filters=4, eps=1e-05, 
                 trainable=self.trainable, 
                 scope_name='norm1')
 
@@ -50,14 +47,11 @@ class ConvNet(BaseModel):
                 norm1, paddings=paddings, 
                 mode='REFLECT', name='pads2')
             conv2 = conv_layer(
-                pads2, filters=64, k_size=5,
+                pads2, filters=8, k_size=3,
                 stride=1, padding='SAME',
                 scope_name='conv2', reuse=reuse)
-            pool2 = maxpool(
-                conv2, k_size=2, stride=2,
-                padding='SAME', scope_name='pool2')
             norm2 = batch_normalization(
-                pool2, num_filters=64, eps=1e-05, 
+                conv2, num_filters=8, eps=1e-05, 
                 trainable=self.trainable, 
                 scope_name='norm2')
 
@@ -65,60 +59,34 @@ class ConvNet(BaseModel):
                 norm2, paddings=paddings, 
                 mode='REFLECT', name='pads3')
             conv3 = conv_layer(
-                pads3, filters=128, k_size=3,
+                pads3, filters=8, k_size=3,
                 stride=1, padding='SAME',
                 scope_name='conv3', reuse=reuse)
-            pool3 = maxpool(
-                conv3, k_size=2, stride=2,
-                padding='SAME', scope_name='pool3')
             norm3 = batch_normalization(
-                pool3, num_filters=128, eps=1e-05, 
+                conv3, num_filters=8, eps=1e-05, 
                 trainable=self.trainable, 
-                scope_name='norm2')
+                scope_name='norm3')
 
-            pads4 = tf.pad(
-                norm3, paddings=paddings, 
-                mode='REFLECT', name='pads4')
-            conv4 = conv_layer(
-                pads4, filters=256, k_size=1,
-                stride=1, padding='SAME',
-                scope_name='conv4', reuse=reuse)
-            pool4 = maxpool(
-                conv4, k_size=2, stride=2,
-                padding='SAME', scope_name='pool4')
-            norm4 = batch_normalization(
-                pool4, num_filters=256, eps=1e-05, 
-                trainable=self.trainable, 
-                scope_name='norm2')
+            cur_dim = norm3.get_shape()
+            norm3_dim = cur_dim[1] * cur_dim[2] * cur_dim[3]
+            norm3_flatten = tf.reshape(norm3, shape=[-1, norm3_dim])
 
-            pads5 = tf.pad(
-                norm4, paddings=paddings, 
-                mode='REFLECT', name='pads5')
-            conv5 = conv_layer(
-                pads5, filters=2, k_size=1,
-                stride=1, padding='SAME',
-                scope_name='conv5', reuse=reuse)
-            pool5 = maxpool(
-                conv5, k_size=2, stride=2,
-                padding='SAME', scope_name='pool5')
+            fc4 = fully_connected(
+                norm3_flatten, out_dim=500,
+                scope_name='fc4', reuse=reuse,
+                activation=tf.nn.relu)
 
-            cur_dim = pool5.get_shape()
-            pool5_dim = cur_dim[1] * cur_dim[2] * cur_dim[3]
-            pool5_flatten = tf.reshape(pool5, shape=[-1, pool5_dim])
+            fc5 = fully_connected(
+                fc4, out_dim=500,
+                scope_name='fc5', reuse=reuse,
+                activation=tf.nn.relu)
 
             fc6 = fully_connected(
-                pool5_flatten, out_dim=500,
-                scope_name='fc6', activation=tf.nn.relu)
+                fc5, out_dim=5,
+                scope_name='fc6', reuse=reuse,
+                activation=None)
 
-            fc7 = fully_connected(
-                fc6, out_dim=500,
-                scope_name='fc7', activation=tf.nn.relu)
-
-            fc8 = fully_connected(
-                fc7, out_dim=5,
-                scope_name='fc8', activation=None)
-
-        return fc8
+        return fc6
 
     def build_model(self, config):
         self.global_step_tensor = tf.Variable(
@@ -161,7 +129,7 @@ class ConvNet(BaseModel):
             tf.add_to_collection('inputs', self.x_2)
             tf.add_to_collection('inputs', self.y)
 
-            self.cnn_1 = self.cnn_networks(self.x_1)
+            self.cnn_1 = self.cnn_networks(self.x_1, reuse=False)
             self.cnn_2 = self.cnn_networks(self.x_2, reuse=True)
 
             tf.add_to_collection('cnn_1', self.cnn_1)
@@ -172,7 +140,7 @@ class ConvNet(BaseModel):
                 input_1=self.cnn_1,
                 input_2=self.cnn_2,
                 label=self.y,
-                margin=0.5,
+                margin=2.0,
                 eps=1e-6)
 
         with tf.name_scope('train_step') as scope:
