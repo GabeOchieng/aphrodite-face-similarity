@@ -58,4 +58,5 @@ def fully_connected(inputs, out_dim,
 
         if activation:
             out = activation(out, name='activation')
-        return out
+            
+    return out
