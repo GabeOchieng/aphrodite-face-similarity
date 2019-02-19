@@ -48,8 +48,6 @@ class FaceEmbeddings:
 
             for face in faces:
                 rect = face['rect']
-                plt.imshow(rect)
-                plt.show()
                 prewhitened = Facenet.prewhiten(rect)
                 embeddings = self._get_embeddings(sess, prewhitened)
                 extracted.append(embeddings)
