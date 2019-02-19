@@ -1,0 +1,2 @@
+embeddings/facenet/data/facenet_weights.pb filter=lfs diff=lfs merge=lfs -text
+embeddings/mtcnn/data/mtcnn_weights.npy filter=lfs diff=lfs merge=lfs -text
