@@ -1,62 +1,31 @@
 # aphrodite-project
 
+## About
+This project is a deep learning model based on convolutional neural network that aim to calculate similarity between two faces in case of KTP selfie. The basic methodology use siamese network to compare two images.
+
+This project is divided into two directory:
+
+- embeddings: Contain pre-trained model to detect face and generate feature vector which is embeddings to compare face similarity
+
+- siamese: Contain siamese convolutional neural network model and at&t face dataset. This model is experimental and not yet qualified to be used in production. You can train this model and play araound with the CNN architecure and code structure
+
+You can find their README.md in each directory
+
 
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development. See deployment for notes on how to deploy the project on a live system.
 
-### Datasets
-
-
 ### Prerequisites
 
-1. There are some dependecies you need to install into the environment. Just run requirement.sh in the terminal.
-
-2. GPU must be installed into your hardware before loading the saved model.
-
+1. There are some dependecies you need to install into the environment. run requirement.sh to install all the dependencies or packages needed by this project
 
 ### Installing Dependencies
 
 Install all dependecies as easy as run requirement.sh file in this repo.
 
 ```bash
-.requirement.sh
-```
-
-## Deployment
-
-The deployment of this project can be done using docker and tf_serving:gpu-latest image.
-
-## Versioning
-
-Versioning in this project is done manully while generating saved_model.pb file
-
-```bash
-python3 serve/ServeModel.py -ver <VERSIOn> -sp <META_FILE_PATH> -sm <PB_FILE_PATH>
-```
-
-or
-
-```bash
-python3 serve/ServeModel.py -h
-```
-
-to see all details about the arguments while running ServeModel.py
-
-## Client
-To communicate with docker GRPC, client file use protobuf in tensorflow_serving_apis. You can find the code in clien/Client.py. All RPC communication can only use port 8500 for REST API 8501. In this project we use REST API to communicate.
-
-```python
-def get_prediction_from_model(data):
-    ...
-    return
-```
-
-### Visualization
-If you training the model the log file will be created (LOG_PATH), you can open all the visualization in tensorboard.
-
-```bash
-tensorboard --logdir=LOG_PATH
+sh requirement.sh
 ```
 
 ## Authors
